@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mongoose": "^8.1.1"
+  },
+  "name": "overtime_tracker_backend",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "dotenv": "^16.4.1",
+    "nodemon": "^3.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MiIos1988/overtime_tracker_backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MiIos1988/overtime_tracker_backend/issues"
+  },
+  "homepage": "https://github.com/MiIos1988/overtime_tracker_backend#readme"
+}
