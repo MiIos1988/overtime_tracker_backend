@@ -1,9 +1,9 @@
 import express from "express";
+import loginValidation from "../validation/loginValidation";
 const managerRoute = express.Router();
 
-managerRoute.post("/add-manager", async (req, res) => {
-    console.log(req.body);
-    console.log(req.headers.authorization)
+managerRoute.post("/add-manager", loginValidation, async (req, res) => {
+    console.log("work")
     res.send("ok")
 })
 
