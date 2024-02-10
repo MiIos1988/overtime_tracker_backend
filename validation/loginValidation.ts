@@ -1,29 +1,35 @@
-import {Request ,Response, NextFunction} from "express";
-const AWS = require('aws-sdk');
+import { Request, Response, NextFunction } from "express";
+import { CognitoJwtVerifier } from "aws-jwt-verify";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-const loginValidation = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
+const loginValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.headers.authorization;
+  const USER_POOL_ID = process.env.USER_POOL_ID;
+  const CLIENT_ID = process.env.CLIENT_ID;
 
-    console.log(typeof(token))
-    console.log(token)
-
-    if(!token){
-        return res.status(401).json({ message: 'Missing JWT token.' });
-    }
-
-    const cognito = new AWS.CognitoIdentityServiceProvider({ region: 'eu-north-1' });
-
-    const params = {
-        AccessToken: token as string
-    };
+  if (USER_POOL_ID && CLIENT_ID) {
+    const verifier = CognitoJwtVerifier.create({
+      userPoolId: USER_POOL_ID,
+      tokenUse: "access",
+      clientId: CLIENT_ID,
+    });
 
     try {
-         await cognito.getUser(params).promise();
+      if (token) {
+        console.log(token);
+        await verifier.verify(token);
         next();
+      }
     } catch (error) {
-        console.error('Error verifying token:', error);
-        return res.status(401).json({ error: 'Invalid JWT token.' });
+      console.error("Error verifying token:", error);
+      return res.status(401).json({ error: "Invalid JWT token." });
     }
-}
+  }
+};
 
 export default loginValidation;
