@@ -21,8 +21,8 @@ const loginValidation = async (
 
     try {
       if (token) {
-        console.log(token);
-        await verifier.verify(token);
+        const tokenWithoutBearer = token.replace("Bearer ", "");
+        await verifier.verify(tokenWithoutBearer);
         next();
       }
     } catch (error) {

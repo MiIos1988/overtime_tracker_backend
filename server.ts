@@ -5,7 +5,7 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import managerRoute from "./routes/managerRoute";
 dotenv.config();
-const portNumber = process.env.PORT;
+const portNumber = 5000;
 const mongoDbUrl = process.env.MONGO_DB_URL;
 
 if (mongoDbUrl) {
