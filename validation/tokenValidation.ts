@@ -16,7 +16,7 @@ const loginValidation = async (
     const verifier = CognitoJwtVerifier.create({
       userPoolId: USER_POOL_ID,
       tokenUse: "access",
-      clientId: "3gt5j5ft7bhsc3qkmtrddcjstt",
+      clientId: CLIENT_ID,
     });
 
     try {
