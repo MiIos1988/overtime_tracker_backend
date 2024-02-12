@@ -17,6 +17,7 @@ const loginValidation = async (
       userPoolId: USER_POOL_ID,
       tokenUse: "access",
       clientId: CLIENT_ID,
+      tokenExpiration: "3h"
     });
 
     try {
@@ -24,6 +25,8 @@ const loginValidation = async (
         const tokenWithoutBearer = token.replace("Bearer ", "");
         await verifier.verify(tokenWithoutBearer);
         next();
+      }else {
+        return res.status(401).json({ error: "JWT token required." });
       }
     } catch (error) {
       console.error("Error verifying token:", error);
