@@ -13,12 +13,15 @@ const managersSchema = new mongoose.Schema({
     type: [
       {
         nameWorker: { type: String, require: true },
-        overtimeHours: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "OvertimeHours",
-          },
-        ],
+        overtimeHours: {
+          type: [
+            {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "OvertimeHours",
+            },
+          ],
+          default: [],
+        },
       },
     ],
     default: [],

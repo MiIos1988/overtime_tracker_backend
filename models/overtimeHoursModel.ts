@@ -15,7 +15,7 @@ const overtimeHoursSchema = new mongoose.Schema({
     }
 });
 
-const OvertimeHoursModel = mongoose.model("Overtime", overtimeHoursSchema);
+const OvertimeHoursModel = mongoose.model("overtimeHours", overtimeHoursSchema);
 
 export default OvertimeHoursModel;
 
