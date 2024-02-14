@@ -12,7 +12,6 @@ managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
       const existingManager = await ManagerModel.findOne({
         userId: decodedToken.sub,
       });
-      console.log(existingManager);
       if (!existingManager) {
         await ManagerModel.create({
           email: decodedToken.email,
@@ -30,5 +29,27 @@ managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
   }
   res.send("ok");
 });
+
+managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
+  try {
+    const token  = req.headers.authorization
+    const { nameWorker } = req.body;
+  if(token){
+    const decodedToken: any = jwtDecode(token);
+    const manager = await ManagerModel.findOne({userId: decodedToken.sub})
+    if(manager){
+      manager.workers.push({nameWorker})
+      await manager.save();
+    }
+
+    console.log(manager)
+    console.log(req.body)
+    res.send("Ok")
+  }
+  } catch (error) {
+    console.log(error)
+  }
+  
+})
 
 export default managerRoute;
