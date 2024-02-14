@@ -38,13 +38,14 @@ managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
     const decodedToken: any = jwtDecode(token);
     const manager = await ManagerModel.findOne({userId: decodedToken.sub})
     if(manager){
-      manager.workers.push({nameWorker})
+      manager.workers.push({nameWorker});
       await manager.save();
-    }
 
-    console.log(manager)
-    console.log(req.body)
-    res.send("Ok")
+      const allWorkers = manager.workers.map(worker => worker.nameWorker)
+      console.log(manager)
+      console.log(allWorkers)
+      res.send({allWorkers})
+    }
   }
   } catch (error) {
     console.log(error)
