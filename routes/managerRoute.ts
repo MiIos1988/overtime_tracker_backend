@@ -20,7 +20,8 @@ managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
         return res.send("Create manager");
       } else {
         console.log("Exist manager");
-        return res.send("Exist manager");
+        const allWorkers = existingManager.workers.map(worker => worker.nameWorker)
+        return res.send({allWorkers});
       }
     } catch (error) {
       console.log(error);
