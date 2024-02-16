@@ -20,8 +20,10 @@ managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
         return res.send("Create manager");
       } else {
         console.log("Exist manager");
-        const allWorkers = existingManager.workers.map(worker => worker.nameWorker)
-        return res.send({allWorkers});
+        const allWorkers = existingManager.workers.map(
+          (worker) => worker.nameWorker
+        );
+        return res.send({ allWorkers });
       }
     } catch (error) {
       console.log(error);
@@ -33,25 +35,24 @@ managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
 
 managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
   try {
-    const token  = req.headers.authorization
+    const token = req.headers.authorization;
     const { nameWorker } = req.body;
-  if(token){
-    const decodedToken: any = jwtDecode(token);
-    const manager = await ManagerModel.findOne({userId: decodedToken.sub})
-    if(manager){
-      manager.workers.push({nameWorker});
-      await manager.save();
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
+      if (manager) {
+        manager.workers.push({ nameWorker });
+        await manager.save();
 
-      const allWorkers = manager.workers.map(worker => worker.nameWorker)
-      console.log(manager)
-      console.log(allWorkers)
-      res.send({allWorkers})
+        const allWorkers = manager.workers.map((worker) => worker.nameWorker);
+        console.log(manager);
+        console.log(allWorkers);
+        res.send({ allWorkers });
+      }
     }
-  }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-  
-})
+});
 
 export default managerRoute;
