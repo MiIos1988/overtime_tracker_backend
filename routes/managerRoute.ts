@@ -41,13 +41,19 @@ managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
       const decodedToken: any = jwtDecode(token);
       const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
       if (manager) {
-        manager.workers.push({ nameWorker });
-        await manager.save();
+        const existWorker = manager.workers.find(
+          (worker) => worker.nameWorker === nameWorker
+        );
+        console.log(existWorker);
+        if (existWorker) {
+          res.send("Worker exist");
+        } else {
+          manager.workers.push({ nameWorker });
+          await manager.save();
 
-        const allWorkers = manager.workers.map((worker) => worker.nameWorker);
-        console.log(manager);
-        console.log(allWorkers);
-        res.send({ allWorkers });
+          const allWorkers = manager.workers.map((worker) => worker.nameWorker);
+          res.send({ allWorkers });
+        }
       }
     }
   } catch (error) {
