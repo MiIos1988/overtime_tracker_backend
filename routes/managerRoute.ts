@@ -61,4 +61,29 @@ managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
   }
 });
 
+managerRoute.delete("/delete-worker", tokenValidation, async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+    const { workerForDelete } = req.body;
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
+      if (manager) {
+        const deleteWorker = manager.workers.filter(
+          (worker) => worker.nameWorker !== workerForDelete
+        );
+        await ManagerModel.findOneAndUpdate(
+          { userId: decodedToken.sub },
+          { workers: deleteWorker },
+          { new: true }
+        );
+        const allWorkers = deleteWorker.map((worker) => worker.nameWorker);
+        res.send({ allWorkers });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 export default managerRoute;
