@@ -86,4 +86,34 @@ managerRoute.delete("/delete-worker", tokenValidation, async (req, res) => {
   }
 });
 
+managerRoute.put("/change-worker-name", tokenValidation, async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+    const { nameBeforeChange, nameAfterChange } = req.body;
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
+      if (manager) {
+        const changeWorkerName = manager.workers.map((worker) => {
+          if (worker.nameWorker === nameBeforeChange) {
+            worker.nameWorker = nameAfterChange;
+            return worker;
+          } else {
+            return worker;
+          }
+        });
+        await ManagerModel.findOneAndUpdate(
+          { userId: decodedToken.sub },
+          { workers: changeWorkerName },
+          { new: true }
+        );
+        const allWorkers = changeWorkerName.map((worker) => worker.nameWorker);
+        res.send({ allWorkers });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 export default managerRoute;
