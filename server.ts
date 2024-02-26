@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import managerRoute from "./routes/managerRoute";
+import saveImageRoute from "./routes/saveImageRoute";
 dotenv.config();
 const portNumber = 5000;
 const mongoDbUrl = process.env.MONGO_DB_URL;
@@ -23,6 +24,7 @@ if (mongoDbUrl) {
 app.use(express.json());
 app.use(cors());
 app.use("/api/manager", managerRoute);
+app.use("/api/aws-s3", saveImageRoute);
 
 app.listen(portNumber, (err?: any) => {
   err
