@@ -4,7 +4,7 @@ const upload = multer();
 import tokenValidation from "../validation/tokenValidation";
 const saveImageRoute = express.Router();
 
-saveImageRoute.post("/change-image", upload.single("image"), (req, res) => {
+saveImageRoute.post("/change-image", upload.single("image"), tokenValidation, (req, res) => {
     console.log(req.file)
     res.send("ok")
 })
