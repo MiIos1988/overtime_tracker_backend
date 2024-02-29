@@ -40,7 +40,7 @@ saveImageRoute.post(
           Bucket: process.env.BUCKET_NAME,
           Key: req.body.worker,
         });
-        const url = await getSignedUrl(s3, command, { expiresIn: 15 * 60 });
+        const url = await getSignedUrl(s3, command);
         console.log("Presigned URL: ", url);
         res.send("ok");
       }
