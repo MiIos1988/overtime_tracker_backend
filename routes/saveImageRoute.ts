@@ -1,44 +1,53 @@
 import express from "express";
-import multer from 'multer';
+import multer from "multer";
 const upload = multer();
-// import * as dotenv from "dotenv";
-// dotenv.config();
 import tokenValidation from "../validation/tokenValidation";
 const saveImageRoute = express.Router();
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  S3ClientConfig,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
-    region: "eu-north-1", 
-    credentials: {
-      accessKeyId: process.env.ACCESS_KEY || "",
-      secretAccessKey: process.env.SECRET_ACCESS_KEY || "",
-    },
-  });
-  
+  region: "eu-north-1",
+  credentials: {
+    accessKeyId: process.env.ACCESS_KEY || "",
+    secretAccessKey: process.env.SECRET_ACCESS_KEY || "",
+  },
+});
 
-saveImageRoute.post("/change-image", upload.single("image"), tokenValidation, async (req, res) => {
+saveImageRoute.post(
+  "/change-image",
+  upload.single("image"),
+  tokenValidation,
+  async (req, res) => {
     try {
-        if(req.file){
-            const uploadParams = {
-                Bucket: process.env.BUCKET_NAME,
-                Key: req.body.worker,
-                Body: req.file.buffer,
-                ContentType: req.file.mimetype, 
-            };
-            const putObjectCommand = new PutObjectCommand(uploadParams);
-            const response = await s3.send(putObjectCommand);
-            console.log(response)
-            // console.log(uploadParams.Bucket)
-            // console.log(s3.config.region)
-            // console.log(uploadParams.Key)
+      console.log(process.env.ACCESS_KEY);
+      if (req.file) {
+        const uploadParams = {
+          Bucket: process.env.BUCKET_NAME,
+          Key: req.body.worker,
+          Body: req.file.buffer,
+          ContentType: req.file.mimetype,
+        };
+        const putObjectCommand = new PutObjectCommand(uploadParams);
+        await s3.send(putObjectCommand);
 
-            const imageUrl = `https://${process.env.BUCKET_NAME}.s3.eu-north-1.amazonaws.com/${req.body.worker}`;
-            console.log(imageUrl)
-            res.send("ok")
-        }
+        const command = new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: req.body.worker,
+        });
+        const url = await getSignedUrl(s3, command, { expiresIn: 15 * 60 });
+        console.log("Presigned URL: ", url);
+        res.send("ok");
+      }
     } catch (error) {
-        
+      console.log(error);
     }
-})
+  }
+);
 
 export default saveImageRoute;
