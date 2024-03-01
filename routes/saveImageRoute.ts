@@ -7,9 +7,10 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
-  S3ClientConfig,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { jwtDecode } from "jwt-decode";
+import ManagerModel from "../models/managersModel";
 
 const s3 = new S3Client({
   region: "eu-north-1",
@@ -25,7 +26,6 @@ saveImageRoute.post(
   tokenValidation,
   async (req, res) => {
     try {
-      console.log(process.env.ACCESS_KEY);
       if (req.file) {
         const uploadParams = {
           Bucket: process.env.BUCKET_NAME,
@@ -41,7 +41,21 @@ saveImageRoute.post(
           Key: req.body.worker,
         });
         const url = await getSignedUrl(s3, command);
-        console.log("Presigned URL: ", url);
+        const token = req.headers.authorization;
+        if(token){
+            const decodedToken: any = jwtDecode(token);
+            const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
+            if(manager){
+                const existWorker = manager.workers.find(worker => worker.nameWorker === req.body.worker)
+                if(existWorker){
+                    existWorker.image = url;
+                    console.log(manager.workers)
+                }
+            }
+        }
+
+
+        // console.log("Presigned URL: ", url);
         res.send("ok");
       }
     } catch (error) {

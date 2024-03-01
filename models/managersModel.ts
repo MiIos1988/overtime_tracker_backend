@@ -13,6 +13,7 @@ const managersSchema = new mongoose.Schema({
     type: [
       {
         nameWorker: { type: String, require: true },
+        image: {type: String, default: ""},
         overtimeHours: {
           type: [
             {

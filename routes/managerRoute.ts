@@ -44,7 +44,6 @@ managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
         const existWorker = manager.workers.find(
           (worker) => worker.nameWorker === nameWorker
         );
-        console.log(existWorker);
         if (existWorker) {
           res.send("Worker exist");
         } else {
@@ -103,7 +102,8 @@ managerRoute.put("/change-worker-name", tokenValidation, async (req, res) => {
           }
         });
         await ManagerModel.findOneAndUpdate(
-          { userId: decodedToken.sub },
+          
+          
           { workers: changeWorkerName },
           { new: true }
         );
