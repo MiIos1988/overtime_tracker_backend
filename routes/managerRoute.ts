@@ -102,10 +102,8 @@ managerRoute.put("/change-worker-name", tokenValidation, async (req, res) => {
           }
         });
         await ManagerModel.findOneAndUpdate(
-          
-          
+          { userId: decodedToken.sub },
           { workers: changeWorkerName },
-          { new: true }
         );
         const allWorkers = changeWorkerName.map((worker) => worker.nameWorker);
         res.send({ allWorkers });

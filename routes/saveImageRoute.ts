@@ -42,21 +42,20 @@ saveImageRoute.post(
         });
         const url = await getSignedUrl(s3, command);
         const token = req.headers.authorization;
-        if(token){
-            const decodedToken: any = jwtDecode(token);
-            const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
-            if(manager){
-                const existWorker = manager.workers.find(worker => worker.nameWorker === req.body.worker)
-                if(existWorker){
-                    existWorker.image = url;
-                    console.log(manager.workers)
-                }
-            }
+        if (token) {
+          const decodedToken: any = jwtDecode(token);
+          await ManagerModel.findOneAndUpdate(
+            { userId: decodedToken.sub, "workers.nameWorker": req.body.worker },
+            { $set: { "workers.$.image": url } }
+          );
+          const manager = await ManagerModel.findOne({
+            userId: decodedToken.sub,
+          });
+          if (manager) {
+            console.log(manager.workers);
+            res.send({allWorkers: manager.workers});
+          }
         }
-
-
-        // console.log("Presigned URL: ", url);
-        res.send("ok");
       }
     } catch (error) {
       console.log(error);
