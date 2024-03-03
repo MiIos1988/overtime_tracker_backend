@@ -36,23 +36,19 @@ saveImageRoute.post(
         const putObjectCommand = new PutObjectCommand(uploadParams);
         await s3.send(putObjectCommand);
 
-        const command = new GetObjectCommand({
-          Bucket: process.env.BUCKET_NAME,
-          Key: req.body.worker,
-        });
-        const url = await getSignedUrl(s3, command);
+        const imageUrl = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${encodeURIComponent(imageName)}`;
+        
         const token = req.headers.authorization;
         if (token) {
           const decodedToken: any = jwtDecode(token);
           await ManagerModel.findOneAndUpdate(
             { userId: decodedToken.sub, "workers.nameWorker": req.body.worker },
-            { $set: { "workers.$.image": url } }
+            { $set: { "workers.$.image": imageUrl } }
           );
           const manager = await ManagerModel.findOne({
             userId: decodedToken.sub,
           });
           if (manager) {
-            console.log(manager.workers);
             res.send({allWorkers: manager.workers});
           }
         }
