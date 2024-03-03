@@ -36,8 +36,8 @@ saveImageRoute.post(
         const putObjectCommand = new PutObjectCommand(uploadParams);
         await s3.send(putObjectCommand);
 
-        const imageUrl = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${encodeURIComponent(imageName)}`;
-        
+        const imageUrl = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${encodeURIComponent(req.body.worker)}`;
+
         const token = req.headers.authorization;
         if (token) {
           const decodedToken: any = jwtDecode(token);
