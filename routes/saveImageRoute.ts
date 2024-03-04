@@ -46,11 +46,12 @@ saveImageRoute.post(
             userId: decodedToken.sub,
           });
           if (manager) {
-            res.send({ allWorkers: manager.workers });
+            return res.send({ allWorkers: manager.workers });
           }
         }
       }
     } catch (error) {
+      res.status(400).send("Error");
       console.log(error);
     }
   }

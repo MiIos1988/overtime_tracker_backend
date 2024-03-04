@@ -7,8 +7,8 @@ import ManagerModel from "../models/managersModel";
 managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
   const token = req.body.token;
   if (token) {
-    const decodedToken: any = jwtDecode(token);
     try {
+      const decodedToken: any = jwtDecode(token);
       const existingManager = await ManagerModel.findOne({
         userId: decodedToken.sub,
       });
@@ -26,10 +26,11 @@ managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
       }
     } catch (error) {
       console.log(error);
-      return res.send("Error manager");
+      return res.status(400).send("Error ");
     }
+  } else {
+    res.status(400).send("Token error");
   }
-  res.send("ok");
 });
 
 managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
@@ -55,8 +56,11 @@ managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
           return res.send({ allWorkers });
         }
       }
+    } else {
+      res.status(400).send("Token error");
     }
   } catch (error) {
+    res.status(400).send("Error");
     console.log(error);
   }
 });
@@ -84,8 +88,11 @@ managerRoute.delete("/delete-worker", tokenValidation, async (req, res) => {
           return res.send({ allWorkers });
         }
       }
+    } else {
+      res.status(400).send("Token error");
     }
   } catch (error) {
+    res.status(400).send("Error");
     console.log(error);
   }
 });
@@ -115,8 +122,11 @@ managerRoute.put("/change-worker-name", tokenValidation, async (req, res) => {
         });
         return res.send({ allWorkers });
       }
+    } else {
+      res.status(400).send("Token error");
     }
   } catch (error) {
+    res.status(400).send("Error");
     console.log(error);
   }
 });

@@ -26,11 +26,11 @@ const loginValidation = async (
         await verifier.verify(tokenWithoutBearer);
         next();
       }else {
-        return res.status(401).json({ error: "JWT token required." });
+        return res.status(400).json({ error: "JWT token required." });
       }
     } catch (error) {
       console.error("Error verifying token:", error);
-      return res.status(401).json({ error: "Invalid JWT token." });
+      return res.status(400).json({ error: "Invalid JWT token." });
     }
   }
 };
