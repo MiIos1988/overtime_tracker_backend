@@ -3,12 +3,7 @@ import multer from "multer";
 const upload = multer();
 import tokenValidation from "../validation/tokenValidation";
 const saveImageRoute = express.Router();
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { jwtDecode } from "jwt-decode";
 import ManagerModel from "../models/managersModel";
 
@@ -36,7 +31,9 @@ saveImageRoute.post(
         const putObjectCommand = new PutObjectCommand(uploadParams);
         await s3.send(putObjectCommand);
 
-        const imageUrl = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${encodeURIComponent(req.body.worker)}`;
+        const imageUrl = `https://${
+          process.env.BUCKET_NAME
+        }.s3.amazonaws.com/${encodeURIComponent(req.body.worker)}`;
 
         const token = req.headers.authorization;
         if (token) {
@@ -49,7 +46,7 @@ saveImageRoute.post(
             userId: decodedToken.sub,
           });
           if (manager) {
-            res.send({allWorkers: manager.workers});
+            res.send({ allWorkers: manager.workers });
           }
         }
       }

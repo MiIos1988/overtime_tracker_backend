@@ -19,11 +19,9 @@ managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
         });
         return res.send("Create manager");
       } else {
-        console.log("Exist manager");
         const allWorkers = existingManager.workers.map((worker) => {
-          return {name: worker.nameWorker, image: worker.image}
+          return { nameWorker: worker.nameWorker, image: worker.image };
         });
-        console.log(allWorkers)
         return res.send({ allWorkers });
       }
     } catch (error) {
@@ -51,8 +49,10 @@ managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
           manager.workers.push({ nameWorker });
           await manager.save();
 
-          const allWorkers = manager.workers.map((worker) => worker.nameWorker);
-          res.send({ allWorkers });
+          const allWorkers = manager.workers.map((worker) => {
+            return { nameWorker: worker.nameWorker, image: worker.image };
+          });
+          return res.send({ allWorkers });
         }
       }
     }
@@ -72,13 +72,17 @@ managerRoute.delete("/delete-worker", tokenValidation, async (req, res) => {
         const deleteWorker = manager.workers.filter(
           (worker) => worker.nameWorker !== workerForDelete
         );
-        await ManagerModel.findOneAndUpdate(
+        const updateManager = await ManagerModel.findOneAndUpdate(
           { userId: decodedToken.sub },
           { workers: deleteWorker },
           { new: true }
         );
-        const allWorkers = deleteWorker.map((worker) => worker.nameWorker);
-        res.send({ allWorkers });
+        if (updateManager) {
+          const allWorkers = updateManager.workers.map((worker) => {
+            return { nameWorker: worker.nameWorker, image: worker.image };
+          });
+          return res.send({ allWorkers });
+        }
       }
     }
   } catch (error) {
@@ -104,10 +108,12 @@ managerRoute.put("/change-worker-name", tokenValidation, async (req, res) => {
         });
         await ManagerModel.findOneAndUpdate(
           { userId: decodedToken.sub },
-          { workers: changeWorkerName },
+          { workers: changeWorkerName }
         );
-        const allWorkers = changeWorkerName.map((worker) => worker.nameWorker);
-        res.send({ allWorkers });
+        const allWorkers = manager.workers.map((worker) => {
+          return { nameWorker: worker.nameWorker, image: worker.image };
+        });
+        return res.send({ allWorkers });
       }
     }
   } catch (error) {
