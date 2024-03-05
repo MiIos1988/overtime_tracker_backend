@@ -22,9 +22,11 @@ saveImageRoute.post(
   async (req, res) => {
     try {
       if (req.file) {
+        const randomNumber = Math.floor(100000 + Math.random() * 900000);
+        const nameImg = `${req.body.worker}-${randomNumber}`
         const uploadParams = {
           Bucket: process.env.BUCKET_NAME,
-          Key: req.body.worker,
+          Key: nameImg,
           Body: req.file.buffer,
           ContentType: req.file.mimetype,
         };
@@ -33,20 +35,21 @@ saveImageRoute.post(
 
         const imageUrl = `https://${
           process.env.BUCKET_NAME
-        }.s3.amazonaws.com/${encodeURIComponent(req.body.worker)}`;
+        }.s3.amazonaws.com/${encodeURIComponent(nameImg)}`;
 
         const token = req.headers.authorization;
         if (token) {
           const decodedToken: any = jwtDecode(token);
-          await ManagerModel.findOneAndUpdate(
+          const updateManager = await ManagerModel.findOneAndUpdate(
             { userId: decodedToken.sub, "workers.nameWorker": req.body.worker },
-            { $set: { "workers.$.image": imageUrl } }
+            { $set: { "workers.$.image": imageUrl } },
+            { new: true }
           );
-          const manager = await ManagerModel.findOne({
-            userId: decodedToken.sub,
-          });
-          if (manager) {
-            return res.send({ allWorkers: manager.workers });
+          if (updateManager) {
+            const allWorkers = updateManager.workers.map((worker) => {
+              return { nameWorker: worker.nameWorker, image: worker.image };
+            });
+            return res.send({ allWorkers });
           }
         }
       }
