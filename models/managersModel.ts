@@ -18,7 +18,7 @@ const managersSchema = new mongoose.Schema({
           type: [
             {
               type: mongoose.Schema.Types.ObjectId,
-              ref: "OvertimeHours",
+              ref: "overtimeHours",
             },
           ],
           default: [],

@@ -5,6 +5,7 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import managerRoute from "./routes/managerRoute";
 import saveImageRoute from "./routes/saveImageRoute";
+import overtimeRoute from "./routes/overtimeRoute";
 dotenv.config();
 const portNumber = 5000;
 const mongoDbUrl = process.env.MONGO_DB_URL;
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/api/manager", managerRoute);
 app.use("/api/aws-s3", saveImageRoute);
+app.use("/api/overtime", overtimeRoute);
 
 app.listen(portNumber, (err?: any) => {
   err

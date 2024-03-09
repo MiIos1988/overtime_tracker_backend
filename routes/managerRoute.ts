@@ -131,9 +131,4 @@ managerRoute.put("/change-worker-name", tokenValidation, async (req, res) => {
   }
 });
 
-managerRoute.post("/send-overtime-data", tokenValidation, async (req, res) => {
-  console.log(req.body);
-  res.send("ok")
-})
-
 export default managerRoute;
