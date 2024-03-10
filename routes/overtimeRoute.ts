@@ -13,23 +13,27 @@ overtimeRoute.post("/send-overtime-data", tokenValidation, async (req, res) => {
       const decodedToken: any = jwtDecode(token);
       const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
       if (manager) {
-        console.log(manager)
         const existWorker = manager.workers.find(
           (wor) => wor.nameWorker === worker
-        );
-        const workerId = existWorker?._id;
-        const newOvertimeHoursData = {
-          date: new Date(date),
-          hours: hours,
-          worker: workerId
-        };
-        const newOvertimeHours = new OvertimeHoursModel(newOvertimeHoursData);
-        newOvertimeHours.save();
+          );
+          if (existWorker) {
+            const workerId = existWorker?._id;
+            const newOvertimeHoursData = {
+              date: new Date(date),
+              hours: hours,
+              worker: workerId,
+            };
+            const newOvertimeHours = new OvertimeHoursModel(newOvertimeHoursData);
+            await newOvertimeHours.save();
+            
+            existWorker.overtimeHours.push(newOvertimeHours._id);
+            await manager.save();
+            console.log(manager);
 
-        res.send("ok");
+          res.send("ok");
+        }
       }
     }
-
   } catch (error) {
     console.log(error);
   }
