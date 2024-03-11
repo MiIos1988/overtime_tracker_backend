@@ -39,4 +39,31 @@ overtimeRoute.post("/send-overtime-data", tokenValidation, async (req, res) => {
   }
 });
 
+overtimeRoute.post("/send-overtime-review-data", tokenValidation, async (req, res) => {
+const {worker, startDate, endDate} = req.body;
+const token = req.headers.authorization;
+console.log(req.body)
+try {
+  if(token){
+    const decodedToken: any = jwtDecode(token);
+    const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
+    if (manager) {
+      const existWorker = manager.workers.find(
+        (wor) => wor.nameWorker === worker
+        );
+        if (existWorker) {
+          const overtimeHours = await OvertimeHoursModel.find({ worker: existWorker._id,
+            date: { $gte: new Date(startDate), $lte: new Date(endDate) } });
+          console.log(overtimeHours);
+          res.send("ok")
+
+        }
+    }
+  }
+} catch (error) {
+  console.log(error)
+}
+
+})
+
 export default overtimeRoute;
