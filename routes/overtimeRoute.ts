@@ -63,10 +63,15 @@ overtimeRoute.post(
               date: { $gte: new Date(startDateUTC), $lte: new Date(endDateUTC) },
             });
             const overtimeData = overtimeHours.map((obj) => {
+              const options: Intl.DateTimeFormatOptions  = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            };
               return {
-                date: obj.date,
+                date: obj.date.toLocaleDateString('en-GB', options),
                 hours: obj.hours,
-                worker: existWorker.nameWorker,
+                id: obj._id
               };
             });
             res.send({ overtimeData });
