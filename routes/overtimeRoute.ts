@@ -60,24 +60,46 @@ overtimeRoute.post(
           if (existWorker) {
             const overtimeHours = await OvertimeHoursModel.find({
               worker: existWorker._id,
-              date: { $gte: new Date(startDateUTC), $lte: new Date(endDateUTC) },
+              date: {
+                $gte: new Date(startDateUTC),
+                $lte: new Date(endDateUTC),
+              },
             });
             const overtimeData = overtimeHours.map((obj) => {
-              const options: Intl.DateTimeFormatOptions  = { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric' 
-            };
+              const options: Intl.DateTimeFormatOptions = {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              };
               return {
-                date: obj.date.toLocaleDateString('en-GB', options),
+                date: obj.date.toLocaleDateString("en-GB", options),
                 hours: obj.hours,
-                id: obj._id
+                id: obj._id,
               };
             });
             res.send({ overtimeData });
           }
         }
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+overtimeRoute.delete(
+  "/delete-overtime-hours:id",
+  tokenValidation,
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const overtimeHours = await OvertimeHoursModel.findOneAndDelete({
+        _id: id,
+      });
+
+      overtimeHours
+        ? res.send({ id: overtimeHours._id })
+        : res.status(400).send("Error");
     } catch (error) {
       console.log(error);
     }
