@@ -88,7 +88,7 @@ overtimeRoute.post(
 );
 
 overtimeRoute.delete(
-  "/delete-overtime-hours:id",
+  "/delete-overtime-hours/:id",
   tokenValidation,
   async (req, res) => {
     const { id } = req.params;
