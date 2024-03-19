@@ -3,6 +3,7 @@ import tokenValidation from "../validation/tokenValidation";
 const managerRoute = express.Router();
 import { jwtDecode } from "jwt-decode";
 import ManagerModel from "../models/managersModel";
+import OvertimeHoursModel from "../models/overtimeHoursModel";
 
 managerRoute.post("/add-manager", tokenValidation, async (req, res) => {
   const token = req.body.token;
@@ -65,23 +66,29 @@ managerRoute.post("/create-worker", tokenValidation, async (req, res) => {
   }
 });
 
-managerRoute.delete("/delete-worker", tokenValidation, async (req, res) => {
+managerRoute.delete("/delete-worker/:workerName", tokenValidation, async (req, res) => {
   try {
     const token = req.headers.authorization;
-    const { workerForDelete } = req.body;
+    const { workerName } = req.params;
     if (token) {
       const decodedToken: any = jwtDecode(token);
       const manager = await ManagerModel.findOne({ userId: decodedToken.sub });
       if (manager) {
-        const deleteWorker = manager.workers.filter(
-          (worker) => worker.nameWorker !== workerForDelete
+        const deleteWorker = manager.workers.find(
+          (worker) => worker.nameWorker === workerName
+        );
+        const updateWorkers = manager.workers.filter(
+          (worker) => worker.nameWorker !== workerName
         );
         const updateManager = await ManagerModel.findOneAndUpdate(
           { userId: decodedToken.sub },
-          { workers: deleteWorker },
+          { workers: updateWorkers },
           { new: true }
         );
         if (updateManager) {
+          if(deleteWorker){
+             await OvertimeHoursModel.deleteMany({worker: deleteWorker._id})
+          }
           const allWorkers = updateManager.workers.map((worker) => {
             return { nameWorker: worker.nameWorker, image: worker.image };
           });
