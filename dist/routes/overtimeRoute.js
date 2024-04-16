@@ -28,6 +28,7 @@ overtimeRoute.post("/send-overtime-data", tokenValidation_1.default, (req, res) 
             if (manager) {
                 const existWorker = manager.workers.find((wor) => wor.nameWorker === worker);
                 if (existWorker) {
+                    console.log(existWorker);
                     const workerId = existWorker === null || existWorker === void 0 ? void 0 : existWorker._id;
                     const newOvertimeHoursData = {
                         date: new Date(date),
