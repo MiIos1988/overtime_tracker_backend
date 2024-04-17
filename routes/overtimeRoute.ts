@@ -17,7 +17,11 @@ overtimeRoute.post("/send-overtime-data", tokenValidation, async (req, res) => {
           (wor) => wor.nameWorker === worker
         );
         if (existWorker) {
-          console.log(existWorker) 
+          const showOvertimeHours = OvertimeHoursModel.find(
+            {
+              _id: { $in: existWorker.overtimeHours }
+            });
+          console.log(showOvertimeHours, "OK working") 
           const workerId = existWorker?._id;
           const newOvertimeHoursData = {
             date: new Date(date),
