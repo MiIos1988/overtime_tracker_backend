@@ -28,7 +28,17 @@ overtimeRoute.post("/send-overtime-data", tokenValidation_1.default, (req, res) 
             if (manager) {
                 const existWorker = manager.workers.find((wor) => wor.nameWorker === worker);
                 if (existWorker) {
-                    console.log(existWorker);
+                    const showOvertimeHours = yield overtimeHoursModel_1.default.find({
+                        _id: { $in: existWorker.overtimeHours }
+                    });
+                    const currentDate = date.split('T')[0];
+                    console.log(date);
+                    console.log(showOvertimeHours[0].date.toISOString().split('T')[0]);
+                    // console.log(new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()))
+                    const filterDate = showOvertimeHours.filter(obj => {
+                        return currentDate === obj.date.toISOString().split('T')[0];
+                    });
+                    console.log(filterDate);
                     const workerId = existWorker === null || existWorker === void 0 ? void 0 : existWorker._id;
                     const newOvertimeHoursData = {
                         date: new Date(date),
